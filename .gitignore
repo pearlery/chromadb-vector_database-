@@ -1,0 +1,7 @@
+*.pyc
+_pycache_/
+.venv/
+venv
+*.json 
+chroma_db
+*.csv 
