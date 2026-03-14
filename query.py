@@ -22,5 +22,10 @@ text = "วิชาที่เรียนเกี่ยวกับระบ
 
 result = query_collection(query=text)
 
-print(result['metadatas'])
+print(result)
 
+rank1 = result['ids'][0][0]
+print(rank1)
+
+rank2 = result['ids'][0][1]
+print(rank2)

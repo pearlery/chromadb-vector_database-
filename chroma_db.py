@@ -11,16 +11,29 @@ EMBED_MODEL = "paraphrase-multilingual-mpnet-base-v2" #transformer embedding mod
 CHROMA_DB_PATH = "chroma_db" #databas path 
 
 #load dataframe 
-df = pd.read_csv("training_dataset 2.csv") #load data from csv file
+df = pd.read_csv("query_job_dataset.csv") #load data from csv file
 print(df.columns) #print first 5 rows of the dataframe to check if data is loaded correctly
 
-#prepare data 
-ids = df.index.astype(str).tolist() #create list of ids from dataframe index
-documents = df['description'].tolist() #create list of documents from dataframe column 'text'
-category_id = df['category_id'].tolist() #create list of category ids from dataframe column 'category_id'
-category_name = df['category_name'].tolist() #create list of category names from dataframe column 'category_name'
-source_utl = df['source_url'].tolist() #create list of source urls from dataframe column 'source_url'
+# Clean missing values
+df["ID_JOB"] = df["ID_JOB"].astype(str)
+df["JOB_DESCRIPTION"] = df["JOB_DESCRIPTION"].fillna("").astype(str)
+df["POSITION_NAME"] = df["POSITION_NAME"].fillna("").astype(str)
+df["JOB_QUALIFICATION"] = df["JOB_QUALIFICATION"].fillna("").astype(str)
 
+# Prepare data
+ids = df["ID_JOB"].tolist()
+documents = df["JOB_DESCRIPTION"].tolist()
+position_name = df["POSITION_NAME"].tolist()
+job_qualification = df["JOB_QUALIFICATION"].tolist()
+
+#meatdatas 
+metadatas = [
+    {
+        "position_name": n,
+        "job_qualification": j
+    }
+    for n, j in zip(position_name, job_qualification)
+]
 
 #Create client(Database)
 client = chromadb.PersistentClient(path=CHROMA_DB_PATH)
@@ -40,10 +53,7 @@ collection = client.get_or_create_collection(
 #add data to collection
 collection.add(documents=documents, 
                ids=ids, 
-               metadatas=[{"category_id": cat_id, 
-                           "category_name": cat_name, 
-                           "source_url": url} for cat_id, cat_name, url in zip(category_id, category_name, source_utl)])
-
+               metadatas= metadatas)
 
 #print number of documents in the collection
 print(f"Number of documents in the collection: {collection.count()}")
@@ -62,7 +72,7 @@ def query_collection(query:str):
     
     return results
 
-text = "วิชาที่เรียนเกี่ยวกับระบบคอมพิวเตอร์"
+text = "ตำแหน่งอาจารย์สอนวิชาเบเกอรี่และการจัดการเรียนการสอน"
 
 query = query_collection(query=text)
 print(query)
