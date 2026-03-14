@@ -7,11 +7,11 @@ import numpy as np
 
 #database 
 COLLECTION_NAME = "my_collection" #database name 
-EMBED_MODEL = "paraphrase-multilingual-mpnet-base-v2" #transformer embedding model
+EMBED_MODEL = "intfloat/multilingual-e5-base" 
 CHROMA_DB_PATH = "chroma_db" #databas path 
 
 #load dataframe 
-df = pd.read_csv("query_job_dataset.csv") #load data from csv file
+df = pd.read_csv("chromadb-vector_database-/query_job_dataset.csv") #load data from csv file
 print(df.columns) #print first 5 rows of the dataframe to check if data is loaded correctly
 
 # Clean missing values
@@ -22,7 +22,11 @@ df["JOB_QUALIFICATION"] = df["JOB_QUALIFICATION"].fillna("").astype(str)
 
 # Prepare data
 ids = df["ID_JOB"].tolist()
-documents = df["JOB_DESCRIPTION"].tolist()
+documents = (
+    df["POSITION_NAME"] + " " +
+    df["JOB_DESCRIPTION"] + " " +
+    df["JOB_QUALIFICATION"]
+).tolist()
 position_name = df["POSITION_NAME"].tolist()
 job_qualification = df["JOB_QUALIFICATION"].tolist()
 
