@@ -13,5 +13,4 @@ class Course(BaseModel):
 def query(course: Course):
     query_text = course.description
     result = query_collection(query_text)
-
     return {"result": result}

@@ -5,15 +5,16 @@ from chromadb import Documents, EmbeddingFunction, Embeddings
 import pandas as pd
 import numpy as np
 
+#database 
 COLLECTION_NAME = "my_collection" #database name 
 EMBED_MODEL = "paraphrase-multilingual-mpnet-base-v2" #transformer embedding model
 CHROMA_DB_PATH = "chroma_db" #databas path 
 
-
+#load dataframe 
 df = pd.read_csv("training_dataset 2.csv") #load data from csv file
 print(df.columns) #print first 5 rows of the dataframe to check if data is loaded correctly
 
-
+#prepare data 
 ids = df.index.astype(str).tolist() #create list of ids from dataframe index
 documents = df['description'].tolist() #create list of documents from dataframe column 'text'
 category_id = df['category_id'].tolist() #create list of category ids from dataframe column 'category_id'
@@ -50,6 +51,7 @@ print(f"Number of documents in the collection: {collection.count()}")
 #print first 5 documents in the collection to check if data is added correctly
 print(collection.peek())
 
+#query data from the database
 def query_collection(query:str):
     top_k = 3
 
